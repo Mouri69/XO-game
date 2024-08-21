@@ -4,7 +4,8 @@ const playerVsAIButton = document.getElementById('playerVsAI');
 const restartButton = document.getElementById('restartGame');
 const xScoreElement = document.getElementById('xScore');
 const oScoreElement = document.getElementById('oScore');
-const confetti = document.getElementById('confetti'); // Add this line to select the confetti container
+const messagePopup = document.getElementById('messagePopup');
+const confetti = document.getElementById('confetti');
 let currentPlayer = 'X';
 let gameBoard = ['', '', '', '', '', '', '', '', ''];
 let gameActive = true;
@@ -48,7 +49,10 @@ function handleCellClick(index) {
     if (vsAI && currentPlayer === 'O' && gameActive) {
         setTimeout(() => {
             aiMove();
-            checkWinner();
+            if (!checkWinner()) {
+                // AI move completes; continue game if no winner
+                gameActive = true;
+            }
         }, 500);
     }
 }
@@ -74,14 +78,12 @@ function checkWinner() {
     if (roundWon) {
         gameActive = false;
         updateScore(currentPlayer === 'X' ? 'O' : 'X');
-        setTimeout(() => {
-            alert(`${currentPlayer === 'X' ? 'O' : 'X'} wins!`);
-            showConfetti(); // Show confetti on win
-        }, 100);
+        showConfetti();
+        setTimeout(() => showPopup(`${currentPlayer === 'X' ? 'O' : 'X'} wins!`), 100);
         return true;
     } else if (!gameBoard.includes('')) {
         gameActive = false;
-        setTimeout(() => alert('It\'s a draw!'), 100);
+        setTimeout(() => showPopup('It\'s a draw!'), 100);
         return true;
     }
     return false;
@@ -90,6 +92,7 @@ function checkWinner() {
 function aiMove() {
     let bestMove = getBestMove();
     updateCell(bestMove);
+    checkWinner(); // Check if AI move results in a win
 }
 
 function getBestMove() {
@@ -154,7 +157,6 @@ function resetGame() {
     });
     currentPlayer = 'X';
     gameActive = true;
-    confetti.style.display = 'none'; // Ensure confetti is hidden on restart
 }
 
 function showConfetti() {
@@ -171,3 +173,12 @@ function showConfetti() {
         confetti.style.display = 'none'; // Hide confetti after animation
     }, 4000); // Match duration with animation duration
 }
+
+function showPopup(message) {
+    messagePopup.textContent = message;
+    messagePopup.classList.add('show'); // Add class to show popup
+    setTimeout(() => {
+        messagePopup.classList.remove('show'); // Remove class to hide popup
+    }, 3000); // Display message for 3 seconds
+}
+

@@ -53,7 +53,6 @@ button:hover {
     justify-content: center;
     font-size: 48px;
     background-color: #fff;
-    border: 2px solid #333;
     border-radius: 8px;
     cursor: pointer;
     user-select: none;
@@ -76,6 +75,31 @@ button:hover {
     margin-bottom: 20px;
     font-size: 18px;
 }
+
+/* Add this CSS to style the popup */
+#messagePopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border: 2px solid black;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden; /* Hidden initially */
+    pointer-events: none; /* Disable interaction */
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#messagePopup.show {
+    opacity: 1;
+    visibility: visible; /* Make visible */
+    pointer-events: auto; /* Enable interaction */
+}
+
 
 .confetti {
     display: none; /* Hidden by default */
@@ -215,4 +239,9 @@ button:hover {
     from { opacity: 0; }
     50% { opacity: 1; }
     to { transform: translateY(350px); }
+}
+
+#restartButtonContainer {
+    text-align: center;
+    margin-top: 20px;
 }
