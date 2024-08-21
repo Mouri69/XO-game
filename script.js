@@ -5,7 +5,7 @@ const restartButton = document.getElementById('restartGame');
 const xScoreElement = document.getElementById('xScore');
 const oScoreElement = document.getElementById('oScore');
 const messagePopup = document.getElementById('messagePopup');
-const confetti = document.getElementById('confetti');
+
 let currentPlayer = 'X';
 let gameBoard = ['', '', '', '', '', '', '', '', ''];
 let gameActive = true;
@@ -49,10 +49,7 @@ function handleCellClick(index) {
     if (vsAI && currentPlayer === 'O' && gameActive) {
         setTimeout(() => {
             aiMove();
-            if (!checkWinner()) {
-                // AI move completes; continue game if no winner
-                gameActive = true;
-            }
+            checkWinner();
         }, 500);
     }
 }
@@ -78,12 +75,12 @@ function checkWinner() {
     if (roundWon) {
         gameActive = false;
         updateScore(currentPlayer === 'X' ? 'O' : 'X');
+        showPopup(`${currentPlayer === 'X' ? 'O' : 'X'} wins!`);
         showConfetti();
-        setTimeout(() => showPopup(`${currentPlayer === 'X' ? 'O' : 'X'} wins!`), 100);
         return true;
     } else if (!gameBoard.includes('')) {
         gameActive = false;
-        setTimeout(() => showPopup('It\'s a draw!'), 100);
+        showPopup('It\'s a draw!');
         return true;
     }
     return false;
@@ -92,7 +89,6 @@ function checkWinner() {
 function aiMove() {
     let bestMove = getBestMove();
     updateCell(bestMove);
-    checkWinner(); // Check if AI move results in a win
 }
 
 function getBestMove() {
@@ -157,28 +153,22 @@ function resetGame() {
     });
     currentPlayer = 'X';
     gameActive = true;
-}
-
-function showConfetti() {
-    confetti.style.display = 'flex'; // Show confetti
-    confetti.innerHTML = '';
-    for (let i = 0; i < 20; i++) {
-        const confettiPiece = document.createElement('div');
-        confettiPiece.classList.add('confetti-piece');
-        confettiPiece.style.left = `${Math.random() * 100}%`;
-        confettiPiece.style.animation = `makeItRain ${Math.random() * 3 + 2}s linear`;
-        confetti.appendChild(confettiPiece);
-    }
-    setTimeout(() => {
-        confetti.style.display = 'none'; // Hide confetti after animation
-    }, 4000); // Match duration with animation duration
+    hidePopup(); // Hide popup when resetting the game
 }
 
 function showPopup(message) {
     messagePopup.textContent = message;
-    messagePopup.classList.add('show'); // Add class to show popup
-    setTimeout(() => {
-        messagePopup.classList.remove('show'); // Remove class to hide popup
-    }, 3000); // Display message for 3 seconds
+    messagePopup.classList.add('show');
 }
 
+function hidePopup() {
+    messagePopup.classList.remove('show');
+}
+
+function showConfetti() {
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+}
